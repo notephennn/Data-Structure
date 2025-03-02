@@ -54,8 +54,16 @@ void menu_create(){
     if ( confirm == 'n' || confirm == 'N') return; 
 
     int index = hashFunction(newKopi->nama); 
-    newKopi->next = hashTable[index]; 
-    hashTable[index] = newKopi; 
+    
+    if ( hashTable[index] == NULL ){
+        hashTable[index] = newKopi; 
+    } else {
+        Kopi *temp = hashTable[index]; 
+        while ( temp->next != NULL ){
+            temp = temp->next; 
+        }
+        temp->next = newKopi; 
+    }
 
     printf("Order added succesfully\n"); 
 }
@@ -81,8 +89,16 @@ void menu_view(){
 }
 
 void menu_delete(){
-    if ( !hashTable ) {
-        printf("There are no order\n"); 
+    int isEmpty = 1;
+    for (int i = 0; i < MAX; i++) {
+        if (hashTable[i] != NULL) {
+            isEmpty = 0;
+            break;
+        }
+    }
+
+    if (isEmpty) {
+        printf("There are no orders....\n");
         return; 
     }
 
@@ -96,28 +112,30 @@ void menu_delete(){
 
     while ( temp){
         if ( strcmp(temp->nama, name) == 0 ){
-            char confirm; 
-            do {
-                printf("Confirm removing order [Y/N]: ");
-                scanf(" %c", &confirm);
-                getchar();
-                confirm = toupper(confirm);
-            } while (confirm != 'Y' && confirm != 'N');
-
-            if ( confirm == 'N') return; 
-
-            if ( prev ) prev->next = temp->next; 
-            else hashTable[index] = temp->next; 
-
-            free(temp); 
-            printf("Order from %s is successfully deleted.\n", name);
-            return;
+            prev = temp; 
+            temp = temp->next; 
         }
-        prev = temp; 
-        temp = temp->next; 
     }
 
-    printf("Order not found.\n");
+    if ( !temp ) printf("Order not found\n"); 
+
+    char confirm; 
+    do {
+        printf("Confirm removing order [Y/N]: ");
+        scanf(" %c", &confirm);
+        getchar();
+        confirm = toupper(confirm);
+    } while (confirm != 'Y' && confirm != 'N');
+
+    if ( confirm == 'N') return; 
+
+    if ( prev ) prev->next = temp->next; 
+    else hashTable[index] = temp->next; 
+
+    free(temp); 
+    printf("Order from %s is successfully deleted.\n", name);
+    return;
+
 }
 
 int main(){
