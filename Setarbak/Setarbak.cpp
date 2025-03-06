@@ -110,11 +110,12 @@ void menu_delete(){
     int index = hashFunction(name); 
     Kopi *temp = hashTable[index], *prev = NULL;
 
-    while ( temp){
-        if ( strcmp(temp->nama, name) == 0 ){
+    while ( temp ){
+        if ( strcmp(name, temp->nama) == 0 ){
             prev = temp; 
-            temp = temp->next; 
+            break; 
         }
+        temp = temp->next; 
     }
 
     if ( !temp ) printf("Order not found\n"); 
